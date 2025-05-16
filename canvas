@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas interattivo</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: repeating-linear-gradient(
+        to bottom,
+        #e0e0e0 0px,
+        #e0e0e0 1px,
+        transparent 1px,
+        transparent 24px
+      );
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const width = 1440;
+    const height = 800;
+
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+
+    let drawing = false;
+    let points = [];
+
+    canvas.addEventListener("mousedown", (e) => {
+      drawing = true;
+      points.push({ x: e.offsetX, y: e.offsetY });
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+      if (!drawing) return;
+      const pos = { x: e.offsetX, y: e.offsetY };
+      points.push(pos);
+      draw();
+    });
+
+    canvas.addEventListener("mouseup", () => {
+      drawing = false;
+      points = [];
+    });
+
+    function draw() {
+      if (points.length < 3) return;
+
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.lineWidth = 1.2;
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+
+      for (let i = 1; i < points.length - 2; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+      }
+
+      ctx.stroke();
+    }
+  </script>
+</body>
+</html>
